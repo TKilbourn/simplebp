@@ -1,0 +1,6 @@
+[submodule "build/blueprint"]
+	path = build/blueprint
+	url = https://github.com/google/blueprint.git
+[submodule "build/ninja"]
+	path = build/ninja
+	url = git://github.com/ninja-build/ninja.git
