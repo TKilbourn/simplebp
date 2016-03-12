@@ -10,3 +10,20 @@ system.
 a production-quality build system, but rather it offers a relatively simple implementation of Blueprint. I'll
 probably add a few features as I go along, to explore what Blueprint can do, but for more advanced usage, be sure
 to look at [Android's soong](https://android.googlesource.com/platform/build/soong/).
+
+## Getting started
+
+First, initialize the git repos.
+```bash
+git clone http://github.com/TKilbourn/simplebp
+cd simplebp
+git submodule update --init
+```
+
+Now create an `out` directory and run the bootstrap script.
+```bash
+mkdir out && cd out
+../bootstrap.bash
+```
+
+Now at any time, just execute `out/simplebp` to execute a build.
