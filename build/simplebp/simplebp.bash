@@ -21,7 +21,10 @@ if [[ ! -x build/ninja/ninja ]]; then
     ./configure.py --bootstrap
     popd
 fi
-BUILDDIR="${BUILDDIR}" SKIP_NINJA=true build/blueprint/blueprint.bash
+# Running blueprint.bash is not working well right now, and the build.ninja file
+# in the BUILDDIR seems to handle regenerating things fine. Skip this step until
+# I can figure out what's going on.
+#BUILDDIR="${BUILDDIR}" SKIP_NINJA=true build/blueprint/blueprint.bash
 
 # Run ninja, using the build.ninja file in the build dir. We keep the root
 # source dir as the root directory though, to keep paths predictable during the
