@@ -1,7 +1,11 @@
-cc_binary(
-    name= "hello",
-    srcs= [
+c_binary(
+    name = "hello",
+    srcs = [
         "hello.c",
-        "extra.c",
     ],
+    deps = [ "extra", ],
+    cflags = [ "-O3", "-Wall", "-Werror" ],
+    ldflags = [ "-Wall", ],
 )
+
+subdirs = [ "lib", ]
