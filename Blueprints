@@ -2,8 +2,8 @@
 // builder.
 subdirs = [
     "build/blueprint",
-    "build/simplebp"
+    "build/simplebp",
 ]
 
 // A Hello World C project to demonstrate using the simplebp builder.
-subdirs += [ "hello" ]
+subdirs += ["hello"]

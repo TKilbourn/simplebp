@@ -1,12 +1,12 @@
-c_shared_lib(
-    name = "extra",
-    srcs = [ "src/extra.c", ],
-    deps = [ "printer", ],
-    includePaths = [ "include", ],
-)
+c_shared_lib {
+    name: "extra",
+    srcs: ["src/extra.c"],
+    deps: ["printer"],
+    includePaths: ["include"],
+}
 
-c_shared_lib(
-    name = "printer",
-    srcs = [ "src/printer.c", ],
-    includePaths = [ "include", ],
-)
+c_shared_lib {
+    name: "printer",
+    srcs: ["src/printer.c"],
+    includePaths: ["include"],
+}
