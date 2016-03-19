@@ -59,7 +59,7 @@ type SharedLibProperties struct {
 
 type SharedLibModule struct {
 	properties SharedLibProperties
-        incPaths   []string
+	incPaths   []string
 	output     string
 	outPath    string // The path exported to dependers for linking
 }
@@ -79,15 +79,15 @@ func (m *BinaryModule) GenerateBuildActions(ctx blueprint.ModuleContext) {
 	cflags := []string{"${defaultCFlags}"}
 	cflags = append(cflags, m.properties.Cflags...)
 
-        deps := new(depsData)
+	deps := new(depsData)
 	ctx.VisitDepsDepthFirst(func(module blueprint.Module) {
 		gatherDepData(module, ctx, deps)
 	})
 
 	objs := compileSrcsToObjs(ctx, srcs, cflags, deps.includePaths, config.buildDir)
 
-        ldflags := []string{"${defaultLdFlags}"}
-        ldflags = append(ldflags, m.properties.Ldflags...)
+	ldflags := []string{"${defaultLdFlags}"}
+	ldflags = append(ldflags, m.properties.Ldflags...)
 
 	compileObjsToOutput(ctx, objs, ldflags, deps.linkPaths, deps.libraryNames, deps.outputPaths, []string{m.output})
 
@@ -108,9 +108,9 @@ func (m *SharedLibModule) GenerateBuildActions(ctx blueprint.ModuleContext) {
 	config := ctx.Config().(*config)
 
 	srcs := pathtools.PrefixPaths(m.properties.Srcs, ctx.ModuleDir())
-        m.incPaths = pathtools.PrefixPaths(m.properties.IncludePaths, ctx.ModuleDir())
+	m.incPaths = pathtools.PrefixPaths(m.properties.IncludePaths, ctx.ModuleDir())
 	m.outPath = filepath.Join(config.buildDir, ctx.ModuleDir())
-        m.output = filepath.Join(m.outPath, "lib"+ctx.ModuleName()+".so")
+	m.output = filepath.Join(m.outPath, "lib"+ctx.ModuleName()+".so")
 
 	cflags := []string{"${defaultCFlags}", "-fPIC"}
 	cflags = append(cflags, m.properties.Cflags...)
@@ -122,15 +122,14 @@ func (m *SharedLibModule) GenerateBuildActions(ctx blueprint.ModuleContext) {
 
 	objs := compileSrcsToObjs(ctx, srcs, cflags, deps.includePaths, config.buildDir)
 
-
-        ldflags := []string{"${defaultLdFlags}", "-shared"}
-        ldflags = append(ldflags, m.properties.Ldflags...)
+	ldflags := []string{"${defaultLdFlags}", "-shared"}
+	ldflags = append(ldflags, m.properties.Ldflags...)
 
 	compileObjsToOutput(ctx, objs, ldflags, deps.linkPaths, deps.libraryNames, deps.outputPaths, []string{m.output})
 
 	ctx.Build(pctx, blueprint.BuildParams{
 		Rule:      blueprint.Phony,
-		Outputs:   []string{"lib"+ctx.ModuleName()+".so"},
+		Outputs:   []string{"lib" + ctx.ModuleName() + ".so"},
 		Implicits: []string{m.output},
 	})
 }
@@ -157,10 +156,10 @@ func gatherDepData(module blueprint.Module, ctx blueprint.ModuleContext, deps *d
 func compileSrcsToObjs(ctx blueprint.ModuleContext, srcs []string, flags []string, includePaths []string, buildDir string) []string {
 	flagStr := strings.Join(flags, " ")
 
-        incPathFlags := make([]string, len(includePaths))
-        for i, path := range includePaths {
-            incPathFlags[i] = "-I"+path
-        }
+	incPathFlags := make([]string, len(includePaths))
+	for i, path := range includePaths {
+		incPathFlags[i] = "-I" + path
+	}
 	incStr := strings.Join(incPathFlags, " ")
 
 	objs := make([]string, len(srcs))
@@ -180,19 +179,19 @@ func compileSrcsToObjs(ctx blueprint.ModuleContext, srcs []string, flags []strin
 }
 
 func compileObjsToOutput(ctx blueprint.ModuleContext, objs []string, flags []string, linkPaths []string, libNames []string, libOutputs []string, out []string) {
-        flagStr := strings.Join(flags, " ")
+	flagStr := strings.Join(flags, " ")
 
-        linkPathFlags := make([]string, len(linkPaths))
-        for i, path := range linkPaths {
-            linkPathFlags[i] = "-L"+path
-        }
-        linkPathStr := strings.Join(linkPathFlags, " ")
+	linkPathFlags := make([]string, len(linkPaths))
+	for i, path := range linkPaths {
+		linkPathFlags[i] = "-L" + path
+	}
+	linkPathStr := strings.Join(linkPathFlags, " ")
 
-        libNameFlags := make([]string, len(libNames))
-        for i, name := range libNames {
-            libNameFlags[i] = "-l"+name
-        }
-        libNameStr := strings.Join(libNameFlags, " ")
+	libNameFlags := make([]string, len(libNames))
+	for i, name := range libNames {
+		libNameFlags[i] = "-l" + name
+	}
+	libNameStr := strings.Join(libNameFlags, " ")
 
 	ctx.Build(pctx, blueprint.BuildParams{
 		Rule:      linkRule,
@@ -201,7 +200,7 @@ func compileObjsToOutput(ctx blueprint.ModuleContext, objs []string, flags []str
 		Implicits: libOutputs,
 		Args: map[string]string{
 			"ldFlags": flagStr,
-                        "ldPaths": linkPathStr,
+			"ldPaths": linkPathStr,
 			"libs":    libNameStr,
 		},
 	})

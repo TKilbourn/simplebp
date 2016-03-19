@@ -313,7 +313,8 @@ default ${g.bootstrap.BinDir}/minibp
 build $
         ${g.bootstrap.buildDir}/.bootstrap/simplebp/pkg/github.com/TKilbourn/simplebp.a $
         : g.bootstrap.compile ${g.bootstrap.srcDir}/build/simplebp/cc.go $
-        ${g.bootstrap.srcDir}/build/simplebp/config.go | $
+        ${g.bootstrap.srcDir}/build/simplebp/config.go $
+        ${g.bootstrap.srcDir}/build/simplebp/runscript.go | $
         ${g.bootstrap.compileCmd} $
         ${g.bootstrap.buildDir}/.bootstrap/blueprint-parser/pkg/github.com/google/blueprint/parser.a $
         ${g.bootstrap.buildDir}/.bootstrap/blueprint-pathtools/pkg/github.com/google/blueprint/pathtools.a $

@@ -20,5 +20,6 @@ bootstrap_go_package {
     srcs: [
         "cc.go",
         "config.go",
+        "runscript.go",
     ],
 }

@@ -12,4 +12,15 @@ c_binary {
     ldflags: ["-Wall"],
 }
 
+run_script {
+    name: "pointless_copy",
+    script: "//build/simplebp/copy_out.py",
+    inputs: [
+        "hello.c",
+    ],
+    output: "{{.Input.Basename}}.out",
+    args: "{{.Input.Name}} -o {{.Output}}",
+
+}
+
 subdirs = ["lib"]
