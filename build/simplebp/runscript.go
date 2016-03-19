@@ -100,10 +100,10 @@ func (m *ScriptModule) GenerateBuildActions(ctx blueprint.ModuleContext) {
 		}
 
 		ctx.Build(pctx, blueprint.BuildParams{
-			Rule:    scriptRule,
-			Inputs:  []string{s},
-			Outputs: []string{args.Output},
-                        Implicits: []string{scriptPath},
+			Rule:      scriptRule,
+			Inputs:    []string{s},
+			Outputs:   []string{args.Output},
+			Implicits: []string{scriptPath},
 			Args: map[string]string{
 				"script": scriptPath,
 				"args":   argsBuf.String(),
