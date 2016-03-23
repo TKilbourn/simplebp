@@ -1,3 +1,5 @@
+// A binary named "hello", with one source file. It depends on a module named
+// "extra", defined elsewhere. Custom cflags and ldflags are listed as well.
 cc_binary {
     name: "hello",
     srcs: [
@@ -12,6 +14,10 @@ cc_binary {
     ldflags: ["-Wall"],
 }
 
+// A (useless) demonstration of the run_script module, used to copy each source
+// file to a corresponding file with the extension replaced by ".out". This
+// example shows the use of Go templates for the output and script args, as well
+// as specifying the script as relative to the top level source dir.
 run_script {
     name: "pointless_copy",
     script: "//build/simplebp/copy_out.py",
@@ -23,4 +29,5 @@ run_script {
 
 }
 
+// Include the Blueprints in the lib dir.
 subdirs = ["lib"]
