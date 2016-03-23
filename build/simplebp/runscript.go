@@ -27,6 +27,8 @@ var (
 // A ScriptModule executes a given script once for each input to produce an
 // output. The output name and script arguments are templatized using the values
 // of the input.
+// TODO: make the outputs available to modules that depend on this module, for
+// generating source files.
 type ScriptModule struct {
 	properties struct {
 		Script string
