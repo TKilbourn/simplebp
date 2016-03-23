@@ -1,7 +1,7 @@
-c_binary {
+cc_binary {
     name: "hello",
     srcs: [
-        "hello.c",
+        "hello.cpp",
     ],
     deps: ["extra"],
     cflags: [
@@ -16,7 +16,7 @@ run_script {
     name: "pointless_copy",
     script: "//build/simplebp/copy_out.py",
     inputs: [
-        "hello.c",
+        "hello.cpp",
     ],
     output: "{{.Input.Basename}}.out",
     args: "{{.Input.Name}} -o {{.Output}}",

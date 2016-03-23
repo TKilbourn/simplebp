@@ -17,8 +17,8 @@ func main() {
 
 	ctx := blueprint.NewContext()
 
-	ctx.RegisterModuleType("c_binary", simplebp.NewCBinary)
-	ctx.RegisterModuleType("c_shared_lib", simplebp.NewCSharedLib)
+	ctx.RegisterModuleType("cc_binary", simplebp.NewCcBinary)
+	ctx.RegisterModuleType("cc_shared_lib", simplebp.NewCcSharedLib)
 	ctx.RegisterModuleType("run_script", simplebp.NewScript)
 
 	config := simplebp.NewConfig(srcDir, bootstrap.BuildDir)

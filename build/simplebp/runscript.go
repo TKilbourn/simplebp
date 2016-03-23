@@ -66,14 +66,14 @@ func (m *ScriptModule) GenerateBuildActions(ctx blueprint.ModuleContext) {
 
 	srcs := pathtools.PrefixPaths(m.properties.Inputs, ctx.ModuleDir())
 
-	argsTmpl, argsErr := template.New("args").Parse(m.properties.Args)
-	if argsErr != nil {
-		ctx.ModuleErrorf("Could not parse script args: %v", argsErr)
+	argsTmpl, err := template.New("args").Parse(m.properties.Args)
+	if err != nil {
+		ctx.ModuleErrorf("Could not parse script args: %v", err)
 		return
 	}
-	outTmpl, outErr := template.New("out").Parse(m.properties.Output)
-	if outErr != nil {
-		ctx.ModuleErrorf("Could not parse output template: %v", outErr)
+	outTmpl, err := template.New("out").Parse(m.properties.Output)
+	if err != nil {
+		ctx.ModuleErrorf("Could not parse output template: %v", err)
 		return
 	}
 
@@ -87,14 +87,14 @@ func (m *ScriptModule) GenerateBuildActions(ctx blueprint.ModuleContext) {
 		}
 
 		outBuf := &bytes.Buffer{}
-		if err := outTmpl.Execute(outBuf, args); err != nil {
+		if err = outTmpl.Execute(outBuf, args); err != nil {
 			ctx.ModuleErrorf("Could not generate output: %v", err)
 			return
 		}
 
 		args.Output = filepath.Join(config.buildDir, outBuf.String())
 		argsBuf := &bytes.Buffer{}
-		if err := argsTmpl.Execute(argsBuf, args); err != nil {
+		if err = argsTmpl.Execute(argsBuf, args); err != nil {
 			ctx.ModuleErrorf("Could not generate args: %v", err)
 			return
 		}

@@ -13,6 +13,11 @@ var (
 		"-std=c99",
 		"-O2",
 	}
+	defaultCxxFlags = []string{
+		"-Wall",
+		"-std=c++11",
+		"-O2",
+	}
 	defaultLdFlags = []string{}
 
 	pctx   = blueprint.NewPackageContext("bp/build/simplebp")
@@ -21,7 +26,16 @@ var (
 			Command:     "$cc -MMD -MF $out.d $cFlags $incPaths -c $in -o $out",
 			Depfile:     "$out.d",
 			Deps:        blueprint.DepsGCC,
-			Description: "CC $out",
+			Description: "CC   $out",
+		},
+		"cFlags", "incPaths")
+
+	cxxRule = pctx.StaticRule("cxx",
+		blueprint.RuleParams{
+			Command:     "$cxx -MMD -MF $out.d $cFlags $incPaths -c $in -o $out",
+			Depfile:     "$out.d",
+			Deps:        blueprint.DepsGCC,
+			Description: "CXX  $out",
 		},
 		"cFlags", "incPaths")
 
@@ -35,9 +49,11 @@ var (
 
 func init() {
 	pctx.StaticVariable("cc", "gcc")
-	pctx.StaticVariable("ld", "gcc")
+	pctx.StaticVariable("cxx", "g++")
+	pctx.StaticVariable("ld", "g++")
 
 	pctx.StaticVariable("defaultCFlags", strings.Join(defaultCFlags, " "))
+	pctx.StaticVariable("defaultCxxFlags", strings.Join(defaultCxxFlags, " "))
 	pctx.StaticVariable("defaultLdFlags", strings.Join(defaultLdFlags, " "))
 }
 
@@ -64,7 +80,7 @@ type SharedLibModule struct {
 	outPath    string // The path exported to dependers for linking
 }
 
-func NewCBinary() (blueprint.Module, []interface{}) {
+func NewCcBinary() (blueprint.Module, []interface{}) {
 	module := new(BinaryModule)
 	properties := &module.properties
 	return module, []interface{}{properties}
@@ -76,8 +92,7 @@ func (m *BinaryModule) GenerateBuildActions(ctx blueprint.ModuleContext) {
 	srcs := pathtools.PrefixPaths(m.properties.Srcs, ctx.ModuleDir())
 	m.output = filepath.Join(config.buildDir, ctx.ModuleDir(), ctx.ModuleName())
 
-	cflags := []string{"${defaultCFlags}"}
-	cflags = append(cflags, m.properties.Cflags...)
+	cflags := m.properties.Cflags
 
 	deps := new(depsData)
 	ctx.VisitDepsDepthFirst(func(module blueprint.Module) {
@@ -98,7 +113,7 @@ func (m *BinaryModule) GenerateBuildActions(ctx blueprint.ModuleContext) {
 	})
 }
 
-func NewCSharedLib() (blueprint.Module, []interface{}) {
+func NewCcSharedLib() (blueprint.Module, []interface{}) {
 	module := new(SharedLibModule)
 	properties := &module.properties
 	return module, []interface{}{properties}
@@ -112,7 +127,7 @@ func (m *SharedLibModule) GenerateBuildActions(ctx blueprint.ModuleContext) {
 	m.outPath = filepath.Join(config.buildDir, ctx.ModuleDir())
 	m.output = filepath.Join(m.outPath, "lib"+ctx.ModuleName()+".so")
 
-	cflags := []string{"${defaultCFlags}", "-fPIC"}
+	cflags := []string{"-fPIC"}
 	cflags = append(cflags, m.properties.Cflags...)
 
 	deps := &depsData{}
@@ -154,8 +169,6 @@ func gatherDepData(module blueprint.Module, ctx blueprint.ModuleContext, deps *d
 }
 
 func compileSrcsToObjs(ctx blueprint.ModuleContext, srcs []string, flags []string, includePaths []string, buildDir string) []string {
-	flagStr := strings.Join(flags, " ")
-
 	incPathFlags := make([]string, len(includePaths))
 	for i, path := range includePaths {
 		incPathFlags[i] = "-I" + path
@@ -164,9 +177,24 @@ func compileSrcsToObjs(ctx blueprint.ModuleContext, srcs []string, flags []strin
 
 	objs := make([]string, len(srcs))
 	for i, s := range srcs {
+		var rule blueprint.Rule
+		var cflags []string
+		switch filepath.Ext(s) {
+		case ".c":
+			rule = ccRule
+			cflags = append(flags, "${defaultCFlags}")
+		case ".cpp", ".cc", ".cxx":
+			rule = cxxRule
+			cflags = append(flags, "${defaultCxxFlags}")
+		default:
+			ctx.ModuleErrorf("unknown extension for %v", s)
+			continue
+		}
+		flagStr := strings.Join(cflags, " ")
+
 		objs[i] = filepath.Join(buildDir, pathtools.ReplaceExtension(s, "o"))
 		ctx.Build(pctx, blueprint.BuildParams{
-			Rule:    ccRule,
+			Rule:    rule,
 			Inputs:  []string{s},
 			Outputs: []string{objs[i]},
 			Args: map[string]string{
